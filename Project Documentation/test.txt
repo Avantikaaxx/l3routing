@@ -1,0 +1,30 @@
+1. Testing and Debugging for the L3Routing Application: (Screenshots in the Report)
+
+A) We test our code by sending traffic between various hosts in the network(mininet’s built-in)topology.
+We used the pingall command.
+
+b)To further debug our application, we view the contents of an SDN switch’s flow tables by running the following command in your mininet VM.
+
+sudo ovs-ofctl -O OpenFlow13 dump-flows s1
+
+This will output the contents of s1’s flow tables. 
+
+c)Moreover we can debug the application by triggering EventHandlers
+Triggering Event Handlers
+We trigger the linkDiscoveryUpdate(...) event handler by running any of the following commands in mininet:
+link s1 s2 down — takes down the link between s1 and s2; you can assume the network is a connected graph, so you should never take down a link that would result in a disconnected graph
+link s1 s2 up  — brings up the link between s1 and s2
+link s1 h1 down  — takes down the link between s1 and h1; this will also result in a deviceRemoved(...) event and the isAttachedToSwitch() method for the Host object for h1 will now return false
+link s1 h1 up  — brings up the link between s1 and h1; this will also result in a deviceMoved(...) event and the isAttachedToSwitch() method for the Host object for h1 will now return true
+We can trigger the deviceRemoved(...) event handler by taking down a link between a switch and a host, as described above
+We can trigger the deviceMoved(...) event handler by bringing up a link between a switch and a host, as described above
+we can trigger the switchRemoved(...) event handler by running the following command in a regular terminal window (not in mininet):
+  udo ovs-vsctl del-br s1
+Note that once a switch is removed, you cannot easily add it back without restarting mininet. 
+
+2. Testing and Debugging the LoadBalancer:
+
+We test your code by issuing web requests (using curl) from a client host to the virtual IPs.
+To see which packets a host is sending/recieving we use the following command:
+tcpdump -v -n -i hN-eth0
+Note: N denotes the host’s number.
